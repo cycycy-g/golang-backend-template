@@ -9,13 +9,13 @@ import (
 
 func (s *Server) setupRoutes() {
 	// Initialize handlers
-	h := handlers.New(s.store, s.tokenMaker)
+	h := handlers.New(s.Store, s.TokenMaker)
 
 	// Configure CORS
 	s.setupCORS()
 
 	// API routes
-	api := s.router.Group("/api")
+	api := s.Router.Group("/api")
 	{
 		// Auth routes (public)
 		//auth := api.Group("/auth")
@@ -27,13 +27,12 @@ func (s *Server) setupRoutes() {
 
 		// Protected routes
 		protected := api.Group("")
-		protected.Use(middleware.AuthMiddleware(s.tokenMaker))
+		protected.Use(middleware.AuthMiddleware(s.TokenMaker))
 		{
 			// User routes
 			users := protected.Group("/users")
 			{
 				users.GET("/me", h.User.GetProfile)
-				users.PUT("/me", h.User.UpdateProfile)
 			}
 
 			// Add more route groups here as needed
@@ -42,7 +41,7 @@ func (s *Server) setupRoutes() {
 }
 
 func (s *Server) setupCORS() {
-	s.router.Use(cors.New(cors.Config{
+	s.Router.Use(cors.New(cors.Config{
 		AllowOrigins:     s.config.AllowOrigins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},

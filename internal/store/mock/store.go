@@ -10,6 +10,7 @@ import (
 	db "your-project-name/internal/db"
 
 	gomock "github.com/golang/mock/gomock"
+	uuid "github.com/google/uuid"
 )
 
 // MockStore is a mock of Store interface.
@@ -35,8 +36,22 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
+// ExecTx mocks base method.
+func (m *MockStore) ExecTx(arg0 context.Context, arg1 func(*db.Queries) error) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExecTx", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ExecTx indicates an expected call of ExecTx.
+func (mr *MockStoreMockRecorder) ExecTx(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExecTx", reflect.TypeOf((*MockStore)(nil).ExecTx), arg0, arg1)
+}
+
 // GetUser mocks base method.
-func (m *MockStore) GetUser(arg0 context.Context, arg1 int64) (db.User, error) {
+func (m *MockStore) GetUser(arg0 context.Context, arg1 uuid.UUID) (db.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUser", arg0, arg1)
 	ret0, _ := ret[0].(db.User)
@@ -48,18 +63,4 @@ func (m *MockStore) GetUser(arg0 context.Context, arg1 int64) (db.User, error) {
 func (mr *MockStoreMockRecorder) GetUser(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockStore)(nil).GetUser), arg0, arg1)
-}
-
-// execTx mocks base method.
-func (m *MockStore) execTx(arg0 context.Context, arg1 func(*db.Queries) error) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "execTx", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// execTx indicates an expected call of execTx.
-func (mr *MockStoreMockRecorder) execTx(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "execTx", reflect.TypeOf((*MockStore)(nil).execTx), arg0, arg1)
 }

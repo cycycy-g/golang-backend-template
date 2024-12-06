@@ -3,6 +3,7 @@ package user
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"strings"
 )
 
@@ -15,15 +16,15 @@ func ValidateFullName(name string) error {
 	return nil
 }
 
-func getUserIDFromContext(c *gin.Context) (int64, error) {
+func getUserIDFromContext(c *gin.Context) (uuid.UUID, error) {
 	userID, exists := c.Get("user_id")
 	if !exists {
-		return 0, fmt.Errorf("user id not found in context")
+		return uuid.Nil, fmt.Errorf("user id not found in context")
 	}
 
-	id, ok := userID.(int64)
+	id, ok := userID.(uuid.UUID)
 	if !ok {
-		return 0, fmt.Errorf("invalid user id format")
+		return uuid.Nil, fmt.Errorf("invalid user id format")
 	}
 
 	return id, nil

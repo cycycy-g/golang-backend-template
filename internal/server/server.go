@@ -19,36 +19,26 @@ import (
 
 type Server struct {
 	config     config.Config
-	store      store.Store
-	router     *gin.Engine
-	tokenMaker auth.Maker
-	httpServer *http.Server
+	Store      store.Store
+	Router     *gin.Engine
+	TokenMaker auth.Maker
 	db         *pgxpool.Pool
 }
 
-func NewServer(config config.Config) (*Server, error) {
-	dbPool, err := pgxpool.New(context.Background(), config.DBSource)
-	if err != nil {
-		return nil, fmt.Errorf("cannot create db pool: %w", err)
-	}
-
+func NewServer(config config.Config, store store.Store) (*Server, error) {
 	tokenMaker, err := auth.NewJWTMaker(config.JWTSecret)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create token maker: %w", err)
 	}
 
-	store := store.NewStore(dbPool)
-
 	server := &Server{
 		config:     config,
-		store:      store,
-		router:     gin.Default(),
-		tokenMaker: tokenMaker,
-		db:         dbPool,
+		Store:      store, // Use provided store
+		Router:     gin.Default(),
+		TokenMaker: tokenMaker,
 	}
 
 	server.setupRoutes()
-
 	return server, nil
 }
 
@@ -61,12 +51,12 @@ func (s *Server) Start() error {
 	// Graceful shutdown setup
 	srv := &http.Server{
 		Addr:    s.config.ServerAddress,
-		Handler: s.router,
+		Handler: s.Router,
 	}
 
 	// Start server in a goroutine
 	go func() {
-		if err := s.router.Run(s.config.ServerAddress); err != nil && err != http.ErrServerClosed {
+		if err := s.Router.Run(s.config.ServerAddress); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Failed to start server: %v", err)
 		}
 	}()

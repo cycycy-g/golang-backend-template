@@ -10,7 +10,7 @@ import (
 // Store provides all functions to execute SQL queries and transactions
 type Store interface {
 	db.Querier
-	execTx(ctx context.Context, fn func(*db.Queries) error) error
+	ExecTx(ctx context.Context, fn func(*db.Queries) error) error
 }
 
 // SQLStore provides all functions to execute SQL queries and transactions
@@ -27,8 +27,8 @@ func NewStore(connPool *pgxpool.Pool) Store {
 	}
 }
 
-// execTx executes a function within a database transaction
-func (store *SQLStore) execTx(ctx context.Context, fn func(*db.Queries) error) error {
+// ExecTx executes a function within a database transaction
+func (store *SQLStore) ExecTx(ctx context.Context, fn func(*db.Queries) error) error {
 	tx, err := store.connPool.Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)

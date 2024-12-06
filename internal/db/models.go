@@ -6,10 +6,12 @@ package db
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type User struct {
-	ID             int64     `json:"id"`
+	ID             uuid.UUID `json:"id"`
 	Username       string    `json:"username"`
 	HashedPassword string    `json:"hashed_password"`
 	Email          string    `json:"email"`
