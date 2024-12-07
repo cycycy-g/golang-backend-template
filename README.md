@@ -45,52 +45,31 @@ make migrateup
 make sqlc
 ```
 
-## Project Structure
-```
-.
-├── cmd/
-│   └── main.go          # Application entry point
-├── config/
-│   └── config.go        # Configuration management
-├── db/
-│   ├── migrations/      # Database migrations
-│   ├── queries/         # SQLC queries
-│   └── sqlc/           # Generated SQLC code
-├── docker/
-│   ├── Dockerfile
-│   └── wait-for.sh
-├── internal/
-│   └── server/         # Server implementation
-├── app.env             # Environment configuration
-├── docker-compose.yaml
-├── sqlc.yaml           # SQLC configuration
-└── Makefile
-```
-
 ## Database and SQLC
 ### SQLC Configuration
 The project uses SQLC for type-safe SQL queries. Configuration in `sqlc.yaml`:
 ```yaml
 version: "2"
 sql:
-  - engine: "postgresql"
-    schema: "sqlc/migrations"
-    queries: "sqlc/queries"
-    gen:
-      go:
-        package: "db"
-        out: "db"
-        sql_package: "pgx/v5"
-        emit_json_tags: true
-        emit_interface: true
-        emit_empty_slices: true
-        overrides:
-          - db_type: "text[]"
-            go_type: "github.com/lib/pq.StringArray"
-          - db_type: "uuid"
-            go_type: "github.com/google/uuid.UUID"
-          - db_type: "timestamptz"
-            go_type: "time.Time"
+   - engine: "postgresql"
+     schema: "sqlc/migrations"
+     queries: "sqlc/queries"
+     gen:
+        go:
+           package: "db"
+           out: "internal/db"
+           sql_package: "pgx/v5"
+           emit_json_tags: true
+           emit_interface: true
+           emit_empty_slices: true
+           overrides:
+              - db_type: "text[]"
+                go_type: "github.com/lib/pq.StringArray"
+                nullable: false
+              - db_type: "uuid"
+                go_type: "github.com/google/uuid.UUID"
+              - db_type: "timestamptz"
+                go_type: "time.Time"
 ```
 ### Writing Queries
 1. Create SQL migrations in db/migrations/
